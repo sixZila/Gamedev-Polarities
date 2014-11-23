@@ -63,15 +63,15 @@ namespace Platformer
 
         // Constants for controling horizontal movement
         private const float MoveAcceleration = 13000.0f;
-        private const float MaxMoveSpeed = 5750.0f;
-        private const float GroundDragFactor = 0.58f;
-        private const float AirDragFactor = 0.58f;
+        private const float MaxMoveSpeed = 7000.0f;
+        private const float GroundDragFactor = 0.65f;
+        private const float AirDragFactor = 0.65f;
 
         // Constants for controlling vertical movement
         private const float MaxJumpTime = 0.22f;
         private const float JumpLaunchVelocity = -3500.0f;
         private const float GravityAcceleration = 3400.0f;
-        private const float MaxFallSpeed = 550.0f;
+        private const float MaxFallSpeed = 450.0f;
         private const float JumpControlPower = 0.14f; 
 
         // Input configuration
@@ -368,6 +368,13 @@ namespace Platformer
                                 if (collision == TileCollision.Impassable || IsOnGround) {
                                     // Resolve the collision along the Y axis.
                                     Position = new Vector2(Position.X, Position.Y + depth.Y);
+
+                                    //Bounce on ceiling
+                                    if (!IsOnGround)
+                                    {
+                                        jumpTime = 0.0f;
+                                        velocity.Y *= -.1f;
+                                    }
 
                                     // Perform further collisions with the new bounds.
                                     bounds = BoundingRectangle;
