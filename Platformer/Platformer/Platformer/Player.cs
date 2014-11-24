@@ -62,8 +62,8 @@ namespace Platformer
         Vector2 velocity;
 
         // Constants for controling horizontal movement
-        private const float MoveAcceleration = 13000.0f;
-        private const float MaxMoveSpeed = 7000.0f;
+        private const float MoveAcceleration = 12000.0f;
+        private const float MaxMoveSpeed = 6000.0f;
         private const float GroundDragFactor = 0.65f;
         private const float AirDragFactor = 0.65f;
 
@@ -349,7 +349,12 @@ namespace Platformer
                 for (int x = leftTile; x <= rightTile; ++x) {
                     // If this tile is collidable,
                     TileCollision collision = Level.GetCollision(x, y);
-                    if (collision != TileCollision.Passable) {
+
+
+                    if (collision == TileCollision.BlackSpikes) {
+                        OnKilled(null);
+                    }
+                    else if (collision != TileCollision.Passable) {
                         // Determine collision depth (with direction) and magnitude.
                         Rectangle tileBounds = Level.GetBounds(x, y);
                         Vector2 depth = RectangleExtensions.GetIntersectionDepth(bounds, tileBounds);
@@ -387,8 +392,10 @@ namespace Platformer
                                 // Perform further collisions with the new bounds.
                                 bounds = BoundingRectangle;
                             }
+                            
                         }
                     }
+                    
                 }
             }
 
@@ -404,14 +411,15 @@ namespace Platformer
         /// not killed by an enemy (fell into a hole).
         /// </param>
         public void OnKilled(Enemy killedBy) {
-            isAlive = false;
+            if (isAlive) {
+                isAlive = false;
+                if (killedBy != null)
+                    killedSound.Play();
+                else
+                    fallSound.Play();
 
-            if (killedBy != null)
-                killedSound.Play();
-            else
-                fallSound.Play();
-
-            sprite.PlayAnimation(dieAnimation);
+                sprite.PlayAnimation(dieAnimation);
+            }
         }
 
         /// <summary>

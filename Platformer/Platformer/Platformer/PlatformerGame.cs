@@ -137,8 +137,7 @@ namespace Platformer
             // to get the player back to playing.
             if (!wasContinuePressed && continuePressed)
             {
-                if (!level.Player.IsAlive)
-                {
+                if (!level.Player.IsAlive) {
                     level.StartNewLife();
                 }
                 else if (level.TimeRemaining == TimeSpan.Zero)

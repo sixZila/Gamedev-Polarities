@@ -33,6 +33,13 @@ namespace Platformer {
         /// past it to the left and right, but can not fall down through the top of it.
         /// </summary>
         Platform = 2,
+
+        Orange = 3,
+        Blue = 4,
+        OrangePlatform = 5,
+        BluePlatform = 6,
+
+        BlackSpikes = 7,
     }
 
     /// <summary>

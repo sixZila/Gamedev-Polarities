@@ -185,8 +185,10 @@ namespace Platformer
                     return new Tile(null, TileCollision.Passable);
 
                 // Exit
-                case 'X':
-                    return LoadExitTile(x, y);
+                case '{':
+                    return LoadExitTile(x, y, 0);
+                case '}':
+                    return LoadExitTile(x, y, 1);
 
                 // Gem
                 case 'G':
@@ -194,7 +196,7 @@ namespace Platformer
 
                 // Floating platform
                 case '-':
-                    return LoadTile("Platform", TileCollision.Platform);
+                    return LoadTile("BlackPlatform", TileCollision.Platform);
 
                 // Various enemies
                 case 'A':
@@ -206,21 +208,41 @@ namespace Platformer
                 case 'D':
                     return LoadEnemyTile(x, y, "MonsterD");
 
-                // Platform block
-                case '~':
-                    return LoadVarietyTile("BlockB", 2, TileCollision.Platform);
-
-                // Passable block
-                case ':':
-                    return LoadVarietyTile("BlockB", 2, TileCollision.Passable);
-
                 // Player 1 start point
                 case '1':
                     return LoadStartTile(x, y);
 
                 // Impassable block
                 case '#':
-                    return LoadVarietyTile("BlockA", 7, TileCollision.Impassable);
+                    return LoadTile("BlackFloor", TileCollision.Impassable);
+
+                //Orange block
+                case '+':
+                    return LoadTile("OrangeFloor", TileCollision.Impassable);
+
+                //Blue block
+                case '=':
+                    return LoadTile("BlueFloor", TileCollision.Impassable);
+
+                //Orange platform
+                case '[':
+                    return LoadTile("OrangePlatform", TileCollision.Platform);
+
+                //Blue Platform
+                case ']':
+                    return LoadTile("BluePlatform", TileCollision.Platform);
+
+                //Spikes
+                case '^':
+                    return LoadTile("BlackSpikes", TileCollision.BlackSpikes);
+
+                //Orange spikes
+                case '<':
+                    return LoadTile("OrangeSpikes", TileCollision.Passable);
+
+                //Blue spikes
+                case '>':
+                    return LoadTile("BlueSpikes", TileCollision.Passable);
 
                 // Unknown tile type character
                 default:
@@ -279,14 +301,16 @@ namespace Platformer
         /// <summary>
         /// Remembers the location of the level's exit.
         /// </summary>
-        private Tile LoadExitTile(int x, int y)
+        private Tile LoadExitTile(int x, int y, int type)
         {
-            if (exit != InvalidPosition)
-                throw new NotSupportedException("A level may only have one exit.");
+            // (exit != InvalidPosition)
+            //    throw new NotSupportedException("A level may only have one exit.");
 
             exit = GetBounds(x, y).Center;
-
-            return LoadTile("Exit", TileCollision.Passable);
+            if(type == 0)
+                return LoadTile("ExitTop", TileCollision.Passable);
+            else
+                return LoadTile("ExitBottom", TileCollision.Passable);
         }
 
         /// <summary>
@@ -478,8 +502,7 @@ namespace Platformer
         /// The enemy who killed the player. This is null if the player was not killed by an
         /// enemy, such as when a player falls into a hole.
         /// </param>
-        private void OnPlayerKilled(Enemy killedBy)
-        {
+        private void OnPlayerKilled(Enemy killedBy) {
             Player.OnKilled(killedBy);
         }
 
