@@ -38,8 +38,9 @@ namespace Platformer {
         Blue = 4,
         OrangePlatform = 5,
         BluePlatform = 6,
-
         BlackSpikes = 7,
+        BlueSpikes = 8,
+        OrangeSpikes = 9,
     }
 
     /// <summary>

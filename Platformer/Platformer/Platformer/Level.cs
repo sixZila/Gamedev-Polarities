@@ -218,19 +218,19 @@ namespace Platformer
 
                 //Orange block
                 case '+':
-                    return LoadTile("OrangeFloor", TileCollision.Impassable);
+                    return LoadTile("OrangeFloor", TileCollision.Orange);
 
                 //Blue block
                 case '=':
-                    return LoadTile("BlueFloor", TileCollision.Impassable);
+                    return LoadTile("BlueFloor", TileCollision.Blue);
 
                 //Orange platform
                 case '[':
-                    return LoadTile("OrangePlatform", TileCollision.Platform);
+                    return LoadTile("OrangePlatform", TileCollision.OrangePlatform);
 
                 //Blue Platform
                 case ']':
-                    return LoadTile("BluePlatform", TileCollision.Platform);
+                    return LoadTile("BluePlatform", TileCollision.BluePlatform);
 
                 //Spikes
                 case '^':
@@ -238,11 +238,11 @@ namespace Platformer
 
                 //Orange spikes
                 case '<':
-                    return LoadTile("OrangeSpikes", TileCollision.Passable);
+                    return LoadTile("OrangeSpikes", TileCollision.OrangeSpikes);
 
                 //Blue spikes
                 case '>':
-                    return LoadTile("BlueSpikes", TileCollision.Passable);
+                    return LoadTile("BlueSpikes", TileCollision.BlueSpikes);
 
                 // Unknown tile type character
                 default:
