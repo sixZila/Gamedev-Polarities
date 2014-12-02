@@ -26,6 +26,12 @@ namespace Platformer
         private Animation jumpAnimation;
         private Animation celebrateAnimation;
         private Animation dieAnimation;
+        private Animation orangeIdleAnimation;
+        private Animation orangeRunAnimation;
+        private Animation orangeJumpAnimation;
+        private Animation orangeCelebrateAnimation;
+        private Animation orangeDieAnimation;
+        private Animation orangeSwitchAnimation;
         private SpriteEffects flip = SpriteEffects.None;
         private AnimationPlayer sprite;
 
@@ -33,6 +39,16 @@ namespace Platformer
         private SoundEffect killedSound;
         private SoundEffect jumpSound;
         private SoundEffect fallSound;
+
+        //Player state
+        private PlayerState playerState;
+
+        //Enum of player state
+        enum PlayerState
+        {
+            BLUE = 0,
+            ORANGE = 1,
+        }
 
         public Level Level {
             get { return level; }
@@ -118,6 +134,8 @@ namespace Platformer
         public Player(Level level, Vector2 position) {
             this.level = level;
 
+            playerState = PlayerState.BLUE;
+
             LoadContent();
 
             Reset(position);
@@ -133,6 +151,12 @@ namespace Platformer
             jumpAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/Jump"), 0.1f, false);
             celebrateAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/Celebrate"), 0.1f, false);
             dieAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/Die"), 0.1f, false);
+
+            orangeIdleAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/IdleOrange"), 0.1f, true);
+            orangeRunAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/RunOrange"), 0.5f, true);
+            orangeJumpAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/JumpOrange"), 0.1f, false);
+            orangeCelebrateAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/CelebrateOrange"), 0.1f, false);
+            orangeDieAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/DieOrange"), 0.1f, false);
 
             // Calculate bounds within texture size.            
             int width = (int)(22);
@@ -229,6 +253,12 @@ namespace Platformer
                      keyboardState.IsKeyDown(Keys.Right) ||
                      keyboardState.IsKeyDown(Keys.D)) {
                 movement = 1.0f;
+            }
+
+            if (gamePadState.IsButtonDown(Buttons.LeftShoulder) ||
+                keyboardState.IsKeyDown(Keys.X))
+            {
+                //Change State
             }
 
             // Check if the player wants to jump.
