@@ -13,6 +13,17 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Platformer {
     /// <summary>
+    /// Determines the color state of the player/tile
+    /// </summary>
+    enum ColorState
+    {
+        Blue,
+        Orange,
+        Black,
+        White
+    }
+
+    /// <summary>
     /// Controls the collision detection and response behavior of a tile.
     /// </summary>
     enum TileCollision {
@@ -36,11 +47,7 @@ namespace Platformer {
 
         Orange = 3,
         Blue = 4,
-        OrangePlatform = 5,
-        BluePlatform = 6,
-        BlackSpikes = 7,
-        BlueSpikes = 8,
-        OrangeSpikes = 9,
+        Fatal = 5,
     }
 
     /// <summary>
@@ -49,6 +56,7 @@ namespace Platformer {
     struct Tile {
         public Texture2D Texture;
         public TileCollision Collision;
+        public ColorState Color;
 
         public const int Width = 24;
         public const int Height = 24;
@@ -58,9 +66,10 @@ namespace Platformer {
         /// <summary>
         /// Constructs a new tile.
         /// </summary>
-        public Tile(Texture2D texture, TileCollision collision) {
+        public Tile(Texture2D texture, TileCollision collision, ColorState color) {
             Texture = texture;
             Collision = collision;
+            Color = color;
         }
     }
 }

@@ -257,12 +257,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Levels\3.txt">
-      <Name>3</Name>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Backgrounds\Layer0_3.png">
       <Name>Layer0_3</Name>
       <Importer>TextureImporter</Importer>

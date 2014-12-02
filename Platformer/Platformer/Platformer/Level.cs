@@ -182,7 +182,7 @@ namespace Platformer
             {
                 // Blank space
                 case '.':
-                    return new Tile(null, TileCollision.Passable);
+                    return new Tile(null, TileCollision.Passable, ColorState.White);
 
                 // Exit
                 case '{':
@@ -196,7 +196,7 @@ namespace Platformer
 
                 // Floating platform
                 case '-':
-                    return LoadTile("BlackPlatform", TileCollision.Platform);
+                    return LoadTile("BlackPlatform", TileCollision.Platform, ColorState.Black);
 
                 // Various enemies
                 case 'A':
@@ -214,35 +214,35 @@ namespace Platformer
 
                 // Impassable block
                 case '#':
-                    return LoadTile("BlackFloor", TileCollision.Impassable);
+                    return LoadTile("BlackFloor", TileCollision.Impassable, ColorState.Black);
 
                 //Orange block
                 case '+':
-                    return LoadTile("OrangeFloor", TileCollision.Orange);
+                    return LoadTile("OrangeFloor", TileCollision.Impassable, ColorState.Orange);
 
                 //Blue block
                 case '=':
-                    return LoadTile("BlueFloor", TileCollision.Blue);
+                    return LoadTile("BlueFloor", TileCollision.Impassable, ColorState.Blue);
 
                 //Orange platform
                 case '[':
-                    return LoadTile("OrangePlatform", TileCollision.OrangePlatform);
+                    return LoadTile("OrangePlatform", TileCollision.Platform, ColorState.Orange);
 
                 //Blue Platform
                 case ']':
-                    return LoadTile("BluePlatform", TileCollision.BluePlatform);
+                    return LoadTile("BluePlatform", TileCollision.Platform, ColorState.Blue);
 
                 //Spikes
                 case '^':
-                    return LoadTile("BlackSpikes", TileCollision.BlackSpikes);
+                    return LoadTile("BlackSpikes", TileCollision.Fatal, ColorState.Black);
 
                 //Orange spikes
                 case '<':
-                    return LoadTile("OrangeSpikes", TileCollision.OrangeSpikes);
+                    return LoadTile("OrangeSpikes", TileCollision.Fatal, ColorState.Orange);
 
                 //Blue spikes
                 case '>':
-                    return LoadTile("BlueSpikes", TileCollision.BlueSpikes);
+                    return LoadTile("BlueSpikes", TileCollision.Fatal, ColorState.Blue);
 
                 // Unknown tile type character
                 default:
@@ -261,9 +261,9 @@ namespace Platformer
         /// The tile collision type for the new tile.
         /// </param>
         /// <returns>The new tile.</returns>
-        private Tile LoadTile(string name, TileCollision collision)
+        private Tile LoadTile(string name, TileCollision collision, ColorState color)
         {
-            return new Tile(Content.Load<Texture2D>("Tiles/" + name), collision);
+            return new Tile(Content.Load<Texture2D>("Tiles/" + name), collision, color);
         }
 
 
@@ -277,10 +277,10 @@ namespace Platformer
         /// <param name="variationCount">
         /// The number of variations in this group.
         /// </param>
-        private Tile LoadVarietyTile(string baseName, int variationCount, TileCollision collision)
+        private Tile LoadVarietyTile(string baseName, int variationCount, TileCollision collision, ColorState color)
         {
             int index = random.Next(variationCount);
-            return LoadTile(baseName + index, collision);
+            return LoadTile(baseName + index, collision, color);
         }
 
 
@@ -295,7 +295,7 @@ namespace Platformer
             start = RectangleExtensions.GetBottomCenter(GetBounds(x, y));
             player = new Player(this, start);
 
-            return new Tile(null, TileCollision.Passable);
+            return new Tile(null, TileCollision.Passable, ColorState.White);
         }
 
         /// <summary>
@@ -308,9 +308,9 @@ namespace Platformer
 
             exit = GetBounds(x, y).Center;
             if(type == 0)
-                return LoadTile("ExitTop", TileCollision.Passable);
+                return LoadTile("ExitTop", TileCollision.Passable, ColorState.White);
             else
-                return LoadTile("ExitBottom", TileCollision.Passable);
+                return LoadTile("ExitBottom", TileCollision.Passable, ColorState.White);
         }
 
         /// <summary>
@@ -321,7 +321,7 @@ namespace Platformer
             Vector2 position = RectangleExtensions.GetBottomCenter(GetBounds(x, y));
             enemies.Add(new Enemy(this, position, spriteSet));
 
-            return new Tile(null, TileCollision.Passable);
+            return new Tile(null, TileCollision.Passable, ColorState.White);
         }
 
         /// <summary>
@@ -332,7 +332,7 @@ namespace Platformer
             Point position = GetBounds(x, y).Center;
             gems.Add(new Gem(this, new Vector2(position.X, position.Y)));
 
-            return new Tile(null, TileCollision.Passable);
+            return new Tile(null, TileCollision.Passable, ColorState.White);
         }
 
         /// <summary>
@@ -363,6 +363,18 @@ namespace Platformer
                 return TileCollision.Passable;
 
             return tiles[x, y].Collision;
+        }
+
+        public ColorState GetColorState(int x, int y)
+        {
+            // Prevent escaping past the level ends.
+            if (x < 0 || x >= Width)
+                return ColorState.Black;
+            // Allow jumping past the level top and falling through the bottom.
+            if (y < 0 || y >= Height)
+                return ColorState.White;
+
+            return tiles[x, y].Color;
         }
 
         /// <summary>

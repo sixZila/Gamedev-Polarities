@@ -20,6 +20,9 @@ namespace Platformer
     /// Our fearless adventurer!
     /// </summary>
     class Player {
+        ColorState color = ColorState.Blue;
+
+
         // Animations
         private Animation idleAnimation;
         private Animation runAnimation;
@@ -319,6 +322,16 @@ namespace Platformer
                      keyboardState.IsKeyDown(Keys.D)) {
                 movement = 1.0f;
             }
+            else if (gamePadState.IsButtonDown(Buttons.X))
+            {
+                color = ColorState.Blue;   
+            }
+            else if (gamePadState.IsButtonDown(Buttons.Y))
+            {
+                color = ColorState.Orange;
+            }
+
+
 
             if ((gamePadState.IsButtonDown(Buttons.LeftShoulder) ||
                 keyboardState.IsKeyDown(Keys.X)) && !isChanged)
@@ -448,50 +461,53 @@ namespace Platformer
                 for (int x = leftTile; x <= rightTile; ++x) {
                     // If this tile is collidable,
                     TileCollision collision = Level.GetCollision(x, y);
+                    ColorState tileColor = Level.GetColorState(x, y);
 
+                    if (color == tileColor || tileColor == ColorState.Black) {
+                        if (collision == TileCollision.Fatal) {
+                            OnKilled(null);
+                        }
+                        else if (collision != TileCollision.Passable) {
+                            // Determine collision depth (with direction) and magnitude.
+                            Rectangle tileBounds = Level.GetBounds(x, y);
+                            Vector2 depth = RectangleExtensions.GetIntersectionDepth(bounds, tileBounds);
 
-                    if (collision == TileCollision.BlackSpikes) {
-                        OnKilled(null);
-                    }
-                    else if (collision != TileCollision.Passable) {
-                        // Determine collision depth (with direction) and magnitude.
-                        Rectangle tileBounds = Level.GetBounds(x, y);
-                        Vector2 depth = RectangleExtensions.GetIntersectionDepth(bounds, tileBounds);
+                        
+                            if (depth != Vector2.Zero) {
+                                float absDepthX = Math.Abs(depth.X);
+                                float absDepthY = Math.Abs(depth.Y);
 
-                        if (depth != Vector2.Zero) {
-                            float absDepthX = Math.Abs(depth.X);
-                            float absDepthY = Math.Abs(depth.Y);
+                                // Resolve the collision along the shallow axis.
+                                if (absDepthY < absDepthX || collision == TileCollision.Platform) {
+                                    // If we crossed the top of a tile, we are on the ground.
+                                    if (previousBottom <= tileBounds.Top)
+                                        isOnGround = true;
 
-                            // Resolve the collision along the shallow axis.
-                            if (absDepthY < absDepthX || collision == TileCollision.Platform) {
-                                // If we crossed the top of a tile, we are on the ground.
-                                if (previousBottom <= tileBounds.Top)
-                                    isOnGround = true;
+                                    // Ignore platforms, unless we are on the ground.
+                                    if (collision == TileCollision.Impassable || IsOnGround) {
+                                        // Resolve the collision along the Y axis.
+                                        Position = new Vector2(Position.X, Position.Y + depth.Y);
 
-                                // Ignore platforms, unless we are on the ground.
-                                if (collision == TileCollision.Impassable || IsOnGround) {
-                                    // Resolve the collision along the Y axis.
-                                    Position = new Vector2(Position.X, Position.Y + depth.Y);
+                                        //Bounce on ceiling
+                                        if (!IsOnGround)
+                                        {
+                                            jumpTime = 0.0f;
+                                            velocity.Y *= -.1f;
+                                        }
 
-                                    //Bounce on ceiling
-                                    if (!IsOnGround)
-                                    {
-                                        jumpTime = 0.0f;
-                                        velocity.Y *= -.1f;
+                                        // Perform further collisions with the new bounds.
+                                        bounds = BoundingRectangle;
                                     }
+                                }
+                                else if (collision == TileCollision.Impassable) { // Ignore platforms.
+                                    // Resolve the collision along the X axis.
+                                    Position = new Vector2(Position.X + depth.X, Position.Y);
 
                                     // Perform further collisions with the new bounds.
                                     bounds = BoundingRectangle;
                                 }
-                            }
-                            else if (collision == TileCollision.Impassable) { // Ignore platforms.
-                                // Resolve the collision along the X axis.
-                                Position = new Vector2(Position.X + depth.X, Position.Y);
-
-                                // Perform further collisions with the new bounds.
-                                bounds = BoundingRectangle;
-                            }
                             
+                            }
                         }
                     }
                     
