@@ -26,6 +26,14 @@ namespace Platformer
         private Animation jumpAnimation;
         private Animation celebrateAnimation;
         private Animation dieAnimation;
+
+        private Animation blueIdleAnimation;
+        private Animation blueRunAnimation;
+        private Animation blueJumpAnimation;
+        private Animation blueCelebrateAnimation;
+        private Animation blueDieAnimation;
+        private Animation blueSwitchAnimation;
+
         private Animation orangeIdleAnimation;
         private Animation orangeRunAnimation;
         private Animation orangeJumpAnimation;
@@ -34,6 +42,9 @@ namespace Platformer
         private Animation orangeSwitchAnimation;
         private SpriteEffects flip = SpriteEffects.None;
         private AnimationPlayer sprite;
+        private bool isChanged;
+        private bool changeStarted;
+        private float changeTime;
 
         // Sounds
         private SoundEffect killedSound;
@@ -135,6 +146,7 @@ namespace Platformer
             this.level = level;
 
             playerState = PlayerState.BLUE;
+            changeStarted = false;
 
             LoadContent();
 
@@ -146,17 +158,25 @@ namespace Platformer
         /// </summary>
         public void LoadContent() {
             // Load animated textures.
-            idleAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/Idle"), 0.1f, true);
-            runAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/Run"), 0.5f, true);
-            jumpAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/Jump"), 0.1f, false);
-            celebrateAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/Celebrate"), 0.1f, false);
-            dieAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/Die"), 0.1f, false);
+            blueIdleAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/Idle"), 0.1f, true);
+            blueRunAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/Run"), 0.5f, true);
+            blueJumpAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/Jump"), 0.1f, false);
+            blueCelebrateAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/Celebrate"), 0.1f, false);
+            blueDieAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/Die"), 0.1f, false);
+            blueSwitchAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/SwitchBlue"), 0.1f, false);
 
             orangeIdleAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/IdleOrange"), 0.1f, true);
             orangeRunAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/RunOrange"), 0.5f, true);
             orangeJumpAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/JumpOrange"), 0.1f, false);
             orangeCelebrateAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/CelebrateOrange"), 0.1f, false);
             orangeDieAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/DieOrange"), 0.1f, false);
+            orangeSwitchAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/SwitchOrange"), 0.1f, false);
+
+            idleAnimation = blueIdleAnimation;
+            runAnimation = blueRunAnimation;
+            jumpAnimation = blueJumpAnimation;
+            celebrateAnimation = blueCelebrateAnimation;
+            dieAnimation = blueDieAnimation;
 
             // Calculate bounds within texture size.            
             int width = (int)(22);
@@ -171,6 +191,31 @@ namespace Platformer
             fallSound = Level.Content.Load<SoundEffect>("Sounds/PlayerFall");
         }
 
+        private void changeState()
+        {
+            if (playerState == PlayerState.BLUE)
+            {
+                sprite.PlayAnimation(blueSwitchAnimation);
+
+                idleAnimation = orangeIdleAnimation;
+                runAnimation = orangeRunAnimation;
+                jumpAnimation = orangeJumpAnimation;
+                celebrateAnimation = orangeCelebrateAnimation;
+                dieAnimation = orangeDieAnimation;
+                playerState = PlayerState.ORANGE;
+            }
+            else
+            {
+                sprite.PlayAnimation(orangeSwitchAnimation);
+
+                idleAnimation = blueIdleAnimation;
+                runAnimation = blueRunAnimation;
+                jumpAnimation = blueJumpAnimation;
+                celebrateAnimation = blueCelebrateAnimation;
+                dieAnimation = blueDieAnimation;
+                playerState = PlayerState.BLUE;
+            }
+        }
         /// <summary>
         /// Resets the player to life.
         /// </summary>
@@ -201,7 +246,27 @@ namespace Platformer
 
             ApplyPhysics(gameTime);
 
-            if (IsAlive && IsOnGround) {
+            //Timer for when the user changed colors or "states"
+            if (isChanged)
+            {
+                if (!changeStarted)
+                {
+                    changeTime = 0;
+                    changeStarted = true;
+                }
+                else
+                {   
+                    changeTime += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                }
+
+
+                if (changeTime > 1)
+                {
+                    isChanged = changeStarted = false;
+                }
+            }
+
+            if (IsAlive && IsOnGround && !isChanged) {
                 if (Math.Abs(Velocity.X) - 0.02f > 0)
                 {
                     sprite.PlayAnimation(runAnimation);
@@ -255,10 +320,11 @@ namespace Platformer
                 movement = 1.0f;
             }
 
-            if (gamePadState.IsButtonDown(Buttons.LeftShoulder) ||
-                keyboardState.IsKeyDown(Keys.X))
+            if ((gamePadState.IsButtonDown(Buttons.LeftShoulder) ||
+                keyboardState.IsKeyDown(Keys.X)) && !isChanged)
             {
-                //Change State
+                changeState();
+                isChanged = true;
             }
 
             // Check if the player wants to jump.
@@ -335,7 +401,10 @@ namespace Platformer
                         jumpSound.Play();
 
                     jumpTime += (float)gameTime.ElapsedGameTime.TotalSeconds;
-                    sprite.PlayAnimation(jumpAnimation);
+                    if (!isChanged)
+                    {
+                        sprite.PlayAnimation(jumpAnimation);
+                    }
                 }
 
                 // If we are in the ascent of the jump
