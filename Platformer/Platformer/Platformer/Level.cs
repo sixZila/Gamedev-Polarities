@@ -524,7 +524,7 @@ namespace Platformer
         private void OnExitReached()
         {
             Player.OnReachedExit();
-            exitReachedSound.Play();
+            //exitReachedSound.Play();
             reachedExit = true;
         }
 

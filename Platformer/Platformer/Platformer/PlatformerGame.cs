@@ -81,19 +81,21 @@ namespace Platformer
             hudFont = Content.Load<SpriteFont>("Fonts/Hud");
 
             // Load overlay textures
-            winOverlay = Content.Load<Texture2D>("Overlays/you_win");
-            loseOverlay = Content.Load<Texture2D>("Overlays/you_lose");
-            diedOverlay = Content.Load<Texture2D>("Overlays/you_died");
+            //winOverlay = Content.Load<Texture2D>("Overlays/you_win");
+            //loseOverlay = Content.Load<Texture2D>("Overlays/you_lose");
+            //diedOverlay = Content.Load<Texture2D>("Overlays/you_died");
 
             //Known issue that you get exceptions if you use Media PLayer while connected to your PC
             //See http://social.msdn.microsoft.com/Forums/en/windowsphone7series/thread/c8a243d2-d360-46b1-96bd-62b1ef268c66
             //Which means its impossible to test this from VS.
             //So we have to catch the exception and throw it away
+
             try
             {
-                MediaPlayer.IsRepeating = true;
-                MediaPlayer.Play(Content.Load<Song>("Sounds/Music"));
+                //MediaPlayer.IsRepeating = true;
+                //MediaPlayer.Play(Content.Load<Song>("Sounds/Music"));
             }
+
             catch { }
 
             LoadNextLevel();
@@ -202,7 +204,7 @@ namespace Platformer
 
             // Draw time remaining. Uses modulo division to cause blinking when the
             // player is running out of time.
-            string timeString = "TIME: " + level.TimeRemaining.Minutes.ToString("00") + ":" + level.TimeRemaining.Seconds.ToString("00");
+            /*string timeString = "TIME: " + level.TimeRemaining.Minutes.ToString("00") + ":" + level.TimeRemaining.Seconds.ToString("00");
             Color timeColor;
             if (level.TimeRemaining > WarningTime ||
                 level.ReachedExit ||
@@ -218,7 +220,7 @@ namespace Platformer
 
             // Draw score
             float timeHeight = hudFont.MeasureString(timeString).Y;
-            DrawShadowedString(hudFont, "SCORE: " + level.Score.ToString(), hudLocation + new Vector2(0.0f, timeHeight * 1.2f), Color.Black);
+            DrawShadowedString(hudFont, "SCORE: " + level.Score.ToString(), hudLocation + new Vector2(0.0f, timeHeight * 1.2f), Color.Black);*/
            
             // Determine the status overlay message to show.
             Texture2D status = null;

@@ -20,9 +20,6 @@ namespace Platformer
     /// Our fearless adventurer!
     /// </summary>
     class Player {
-        ColorState color = ColorState.Blue;
-
-
         // Animations
         private Animation idleAnimation;
         private Animation runAnimation;
@@ -55,14 +52,7 @@ namespace Platformer
         private SoundEffect fallSound;
 
         //Player state
-        private PlayerState playerState;
-
-        //Enum of player state
-        enum PlayerState
-        {
-            BLUE = 0,
-            ORANGE = 1,
-        }
+        private ColorState playerState;
 
         public Level Level {
             get { return level; }
@@ -148,7 +138,7 @@ namespace Platformer
         public Player(Level level, Vector2 position) {
             this.level = level;
 
-            playerState = PlayerState.BLUE;
+            playerState = ColorState.Blue;
             changeStarted = false;
 
             LoadContent();
@@ -196,7 +186,7 @@ namespace Platformer
 
         private void changeState()
         {
-            if (playerState == PlayerState.BLUE)
+            if (playerState == ColorState.Blue)
             {
                 sprite.PlayAnimation(blueSwitchAnimation);
 
@@ -205,7 +195,7 @@ namespace Platformer
                 jumpAnimation = orangeJumpAnimation;
                 celebrateAnimation = orangeCelebrateAnimation;
                 dieAnimation = orangeDieAnimation;
-                playerState = PlayerState.ORANGE;
+                playerState = ColorState.Orange;
             }
             else
             {
@@ -216,7 +206,7 @@ namespace Platformer
                 jumpAnimation = blueJumpAnimation;
                 celebrateAnimation = blueCelebrateAnimation;
                 dieAnimation = blueDieAnimation;
-                playerState = PlayerState.BLUE;
+                playerState = ColorState.Blue;
             }
         }
         /// <summary>
@@ -322,14 +312,6 @@ namespace Platformer
                      keyboardState.IsKeyDown(Keys.D)) {
                 movement = 1.0f;
             }
-            else if (gamePadState.IsButtonDown(Buttons.X))
-            {
-                color = ColorState.Blue;   
-            }
-            else if (gamePadState.IsButtonDown(Buttons.Y))
-            {
-                color = ColorState.Orange;
-            }
 
 
 
@@ -410,8 +392,8 @@ namespace Platformer
             if (isJumping) {
                 // Begin or continue a jump
                 if ((!wasJumping && IsOnGround) || jumpTime > 0.0f) {
-                    if (jumpTime == 0.0f)
-                        jumpSound.Play();
+                    //if (jumpTime == 0.0f)
+                        //jumpSound.Play();
 
                     jumpTime += (float)gameTime.ElapsedGameTime.TotalSeconds;
                     if (!isChanged)
@@ -463,7 +445,7 @@ namespace Platformer
                     TileCollision collision = Level.GetCollision(x, y);
                     ColorState tileColor = Level.GetColorState(x, y);
 
-                    if (color == tileColor || tileColor == ColorState.Black) {
+                    if (playerState == tileColor || tileColor == ColorState.Black) {
                         if (collision == TileCollision.Fatal) {
                             OnKilled(null);
                         }
