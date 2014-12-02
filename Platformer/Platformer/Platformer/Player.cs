@@ -156,14 +156,14 @@ namespace Platformer
             blueJumpAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/Jump"), 0.1f, false);
             blueCelebrateAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/Celebrate"), 0.1f, false);
             blueDieAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/Die"), 0.1f, false);
-            blueSwitchAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/SwitchBlue"), 0.1f, false);
+            blueSwitchAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/SwitchBlue"), 0.06f, false);
 
             orangeIdleAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/IdleOrange"), 0.1f, true);
             orangeRunAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/RunOrange"), 0.5f, true);
             orangeJumpAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/JumpOrange"), 0.1f, false);
             orangeCelebrateAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/CelebrateOrange"), 0.1f, false);
             orangeDieAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/DieOrange"), 0.1f, false);
-            orangeSwitchAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/SwitchOrange"), 0.1f, false);
+            orangeSwitchAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/SwitchOrange"), 0.06f, false);
 
             idleAnimation = blueIdleAnimation;
             runAnimation = blueRunAnimation;
@@ -248,12 +248,12 @@ namespace Platformer
                     changeStarted = true;
                 }
                 else
-                {   
-                    changeTime += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                {
+                    changeTime++;
                 }
 
 
-                if (changeTime > 1)
+                if (changeTime > 20)
                 {
                     isChanged = changeStarted = false;
                 }

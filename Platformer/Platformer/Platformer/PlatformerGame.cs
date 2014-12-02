@@ -57,6 +57,9 @@ namespace Platformer
 
         public PlatformerGame()
         {
+            //Set Window Title
+            Window.Title = "Polarities: A Minimalist Platformer";
+
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
 
