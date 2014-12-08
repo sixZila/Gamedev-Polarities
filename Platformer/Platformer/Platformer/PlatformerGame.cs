@@ -23,16 +23,23 @@ namespace Platformer
     /// </summary>
     public class PlatformerGame : Microsoft.Xna.Framework.Game
     {
+
         // Resources for drawing.
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
 
         // Global content.
         private SpriteFont hudFont;
+        private GameState gameState;
 
         private Texture2D winOverlay;
         private Texture2D loseOverlay;
         private Texture2D diedOverlay;
+        private Texture2D startButton;
+        private Texture2D startButtonHighlighted;
+
+        private Vector2 center;
+        private Rectangle startButtonBounds;
 
         // Meta-level game state.
         private int levelIndex = -1;
@@ -55,6 +62,12 @@ namespace Platformer
         // or handle exceptions, both of which can add unnecessary time to level loading.
         private const int numberOfLevels = 3;
 
+        enum GameState
+        {
+            Menu = 0,
+            InGame = 1,
+        }
+
         public PlatformerGame()
         {
             //Set Window Title
@@ -67,6 +80,8 @@ namespace Platformer
             graphics.IsFullScreen = true;
             TargetElapsedTime = TimeSpan.FromTicks(333333);
 #endif
+            this.IsMouseVisible = true;
+            gameState = GameState.Menu;
 
             Accelerometer.Initialize();
         }
@@ -77,6 +92,10 @@ namespace Platformer
         /// </summary>
         protected override void LoadContent()
         {
+            Rectangle titleSafeArea = GraphicsDevice.Viewport.TitleSafeArea;
+            center = new Vector2(titleSafeArea.X + titleSafeArea.Width / 2.0f,
+                                         titleSafeArea.Y + titleSafeArea.Height / 2.0f);
+
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
@@ -87,6 +106,10 @@ namespace Platformer
             //winOverlay = Content.Load<Texture2D>("Overlays/you_win");
             //loseOverlay = Content.Load<Texture2D>("Overlays/you_lose");
             //diedOverlay = Content.Load<Texture2D>("Overlays/you_died");
+            startButton = Content.Load<Texture2D>("Sprites/Menu/StartButton");
+            startButtonHighlighted = Content.Load<Texture2D>("Sprites/Menu/StartButtonHighlight");
+
+            startButtonBounds = new Rectangle((int)center.X - (startButton.Width / 2), (int)center.Y - (startButton.Height / 2), startButton.Width, startButton.Height);
 
             //Known issue that you get exceptions if you use Media PLayer while connected to your PC
             //See http://social.msdn.microsoft.com/Forums/en/windowsphone7series/thread/c8a243d2-d360-46b1-96bd-62b1ef268c66
@@ -101,7 +124,8 @@ namespace Platformer
 
             catch { }
 
-            LoadNextLevel();
+            //Load Main Menu
+            //LoadNextLevel();
         }
 
         /// <summary>
@@ -114,12 +138,28 @@ namespace Platformer
             // Handle polling for our input and handling high-level input
             HandleInput();
 
-            // update our level, passing down the GameTime along with all of our input states
-            level.Update(gameTime, keyboardState, gamePadState, touchState, 
+            if (gameState == GameState.InGame)
+                // update our level, passing down the GameTime along with all of our input states
+                level.Update(gameTime, keyboardState, gamePadState, touchState,
                          accelerometerState, Window.CurrentOrientation);
+            else
+            {
+                var mouseState = Mouse.GetState();
+                var mousePosition = new Point(mouseState.X, mouseState.Y);
 
+                if (mouseState.LeftButton == ButtonState.Pressed)
+                {
+                    if (startButtonBounds.Contains(mousePosition))
+                    {
+                        gameState = GameState.InGame;
+                        LoadNextLevel();
+                    }
+                }
+            }
+    
             base.Update(gameTime);
         }
+
 
         private void HandleInput()
         {
@@ -186,12 +226,25 @@ namespace Platformer
         {
             graphics.GraphicsDevice.Clear(Color.White);
 
-
             spriteBatch.Begin();
+            if (gameState == GameState.InGame)
+            {
+                level.Draw(gameTime, spriteBatch);
 
-            level.Draw(gameTime, spriteBatch);
+                DrawHud();
+            }
+            else if (gameState == GameState.Menu)
+            {
+                Vector2 statusSize = new Vector2(startButton.Width, startButton.Height);
 
-            DrawHud();
+                var mouseState = Mouse.GetState();
+                var mousePosition = new Point(mouseState.X, mouseState.Y);
+
+                if(startButtonBounds.Contains(mousePosition))
+                    spriteBatch.Draw(startButtonHighlighted, center - statusSize / 2, Color.White);
+                else 
+                    spriteBatch.Draw(startButton, center - statusSize / 2, Color.White);
+            }
 
             spriteBatch.End();
 
