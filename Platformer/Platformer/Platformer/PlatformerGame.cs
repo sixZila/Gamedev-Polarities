@@ -37,9 +37,15 @@ namespace Platformer
         private Texture2D diedOverlay;
         private Texture2D startButton;
         private Texture2D startButtonHighlighted;
+        private Texture2D whiteBackground; // For fade in fade out
+        private bool nextLevel;
 
         private Vector2 center;
         private Rectangle startButtonBounds;
+
+        private bool fadeIn;
+        private bool fadeOut;
+        private float alpha;
 
         // Meta-level game state.
         private int levelIndex = -1;
@@ -108,8 +114,13 @@ namespace Platformer
             //diedOverlay = Content.Load<Texture2D>("Overlays/you_died");
             startButton = Content.Load<Texture2D>("Sprites/Menu/StartButton");
             startButtonHighlighted = Content.Load<Texture2D>("Sprites/Menu/StartButtonHighlight");
+            whiteBackground = Content.Load<Texture2D>("Overlays/WhiteOverlay");
 
             startButtonBounds = new Rectangle((int)center.X - (startButton.Width / 2), (int)center.Y - (startButton.Height / 2), startButton.Width, startButton.Height);
+
+            alpha = 1f;
+            fadeIn = true;
+            fadeOut = false;
 
             //Known issue that you get exceptions if you use Media PLayer while connected to your PC
             //See http://social.msdn.microsoft.com/Forums/en/windowsphone7series/thread/c8a243d2-d360-46b1-96bd-62b1ef268c66
@@ -121,7 +132,6 @@ namespace Platformer
                 //MediaPlayer.IsRepeating = true;
                 //MediaPlayer.Play(Content.Load<Song>("Sounds/Music"));
             }
-
             catch { }
 
             //Load Main Menu
@@ -138,6 +148,13 @@ namespace Platformer
             // Handle polling for our input and handling high-level input
             HandleInput();
 
+            if (nextLevel && !fadeOut)
+            {
+                gameState = GameState.InGame;
+                nextLevel = false;
+                LoadNextLevel();
+            }
+
             if (gameState == GameState.InGame)
                 // update our level, passing down the GameTime along with all of our input states
                 level.Update(gameTime, keyboardState, gamePadState, touchState,
@@ -151,8 +168,10 @@ namespace Platformer
                 {
                     if (startButtonBounds.Contains(mousePosition))
                     {
-                        gameState = GameState.InGame;
-                        LoadNextLevel();
+                        
+                        fadeOut = true;
+                        //LoadNextLevel();
+                        nextLevel = true;
                     }
                 }
             }
@@ -185,13 +204,18 @@ namespace Platformer
                 if (!level.Player.IsAlive) {
                     level.StartNewLife();
                 }
-                else if (level.TimeRemaining == TimeSpan.Zero)
-                {
+                //else if (level.TimeRemaining == TimeSpan.Zero)
+                //{
                     if (level.ReachedExit)
-                        LoadNextLevel();
-                    else
-                        ReloadCurrentLevel();
-                }
+                    {
+                        //LoadNextLevel();
+                        fadeOut = true;
+                        nextLevel = true;
+                    }
+                        
+                   // else
+                       // ReloadCurrentLevel();
+                //}
             }
 
             wasContinuePressed = continuePressed;
@@ -245,6 +269,31 @@ namespace Platformer
                 else 
                     spriteBatch.Draw(startButton, center - statusSize / 2, Color.White);
             }
+
+            if (fadeIn)
+            {
+                spriteBatch.Draw(whiteBackground, new Vector2(0, 0), Color.White * alpha);
+                alpha -= 0.05f;
+
+                if (alpha <= 0)
+                {
+                    fadeIn = false;
+                }
+            }
+            if (fadeOut)
+            {
+                Vector2 vector = new Vector2(0, 0);
+                spriteBatch.Draw(whiteBackground, new Vector2(0, 0), Color.White * alpha);
+                alpha += 0.05f;
+
+                if (alpha >= 1.0)
+                {
+                    fadeOut = false;
+                    fadeIn = true;
+                }
+            }
+
+            // spriteBatch.Draw(texture, position, Color.White * alpha);
 
             spriteBatch.End();
 
