@@ -66,7 +66,7 @@ namespace Platformer
         // levels in our content are 0-based and that all numbers under this constant
         // have a level file present. This allows us to not need to check for the file
         // or handle exceptions, both of which can add unnecessary time to level loading.
-        private const int numberOfLevels = 4;
+        private const int numberOfLevels = 8;
 
         enum GameState
         {
@@ -80,6 +80,8 @@ namespace Platformer
             Window.Title = "Polarities: A Minimalist Platformer";
 
             graphics = new GraphicsDeviceManager(this);
+            graphics.PreferredBackBufferWidth = 792;
+            graphics.PreferredBackBufferHeight = 504;
             Content.RootDirectory = "Content";
 
 #if WINDOWS_PHONE
@@ -129,8 +131,8 @@ namespace Platformer
 
             try
             {
-                //MediaPlayer.IsRepeating = true;
-                //MediaPlayer.Play(Content.Load<Song>("Sounds/Music"));
+                MediaPlayer.IsRepeating = true;
+                MediaPlayer.Play(Content.Load<Song>("Sounds/Music"));
             }
             catch { }
 
@@ -146,7 +148,7 @@ namespace Platformer
         protected override void Update(GameTime gameTime)
         {
             // Handle polling for our input and handling high-level input
-            HandleInput();
+            
 
             if (nextLevel && !fadeOut)
             {
@@ -156,9 +158,12 @@ namespace Platformer
             }
 
             if (gameState == GameState.InGame)
+            {
+                HandleInput();
                 // update our level, passing down the GameTime along with all of our input states
                 level.Update(gameTime, keyboardState, gamePadState, touchState,
                          accelerometerState, Window.CurrentOrientation);
+            }
             else
             {
                 var mouseState = Mouse.GetState();
@@ -168,7 +173,7 @@ namespace Platformer
                 {
                     if (startButtonBounds.Contains(mousePosition))
                     {
-                        
+
                         fadeOut = true;
                         //LoadNextLevel();
                         nextLevel = true;

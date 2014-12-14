@@ -179,9 +179,9 @@ namespace Platformer
             localBounds = new Rectangle(left, top, width, height);
 
             // Load sounds.            
-            killedSound = Level.Content.Load<SoundEffect>("Sounds/PlayerKilled");
-            jumpSound = Level.Content.Load<SoundEffect>("Sounds/PlayerJump");
-            fallSound = Level.Content.Load<SoundEffect>("Sounds/PlayerFall");
+            killedSound = Level.Content.Load<SoundEffect>("Sounds/Killed");
+            jumpSound = Level.Content.Load<SoundEffect>("Sounds/Jump");
+            fallSound = Level.Content.Load<SoundEffect>("Sounds/Killed");
         }
 
         private void changeState()
@@ -312,16 +312,20 @@ namespace Platformer
             if (gamePadState.IsButtonDown(Buttons.DPadLeft) ||
                 keyboardState.IsKeyDown(Keys.Left) ||
                 keyboardState.IsKeyDown(Keys.A)) {
-                    if (keyboardState.IsKeyDown(Keys.LeftShift))
+                    if (gamePadState.IsButtonDown(Buttons.RightShoulder) || keyboardState.IsKeyDown(Keys.LeftShift))
+                    {
                         movement = -1.5f;
-                    else
+                    }
+                    else 
                         movement = -1.0f;
             }
             else if (gamePadState.IsButtonDown(Buttons.DPadRight) ||
                      keyboardState.IsKeyDown(Keys.Right) ||
                      keyboardState.IsKeyDown(Keys.D)) {
-                         if (keyboardState.IsKeyDown(Keys.LeftShift))
+                         if (gamePadState.IsButtonDown(Buttons.RightShoulder) || keyboardState.IsKeyDown(Keys.LeftShift))
+                         {
                              movement = 1.5f;
+                         }
                          else
                              movement = 1.0f;
             }
@@ -405,8 +409,8 @@ namespace Platformer
             if (isJumping) {
                 // Begin or continue a jump
                 if ((!wasJumping && IsOnGround) || jumpTime > 0.0f) {
-                    //if (jumpTime == 0.0f)
-                        //jumpSound.Play();
+                    if (jumpTime == 0.0f)
+                        jumpSound.Play();
 
                     jumpTime += (float)gameTime.ElapsedGameTime.TotalSeconds;
                     if (!isChanged)

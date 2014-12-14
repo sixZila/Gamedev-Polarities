@@ -111,7 +111,7 @@ namespace Platformer
             }*/
 
             // Load sounds.
-            exitReachedSound = Content.Load<SoundEffect>("Sounds/ExitReached");
+            exitReachedSound = Content.Load<SoundEffect>("Sounds/Exit");
         }
 
         /// <summary>
@@ -525,7 +525,7 @@ namespace Platformer
         private void OnExitReached()
         {
             Player.OnReachedExit();
-            //exitReachedSound.Play();
+            exitReachedSound.Play();
             reachedExit = true;
         }
 
