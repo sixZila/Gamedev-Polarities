@@ -516,10 +516,6 @@ namespace Platformer
         public void OnKilled(Enemy killedBy) {
             if (isAlive) {
                 isAlive = false;
-                if (killedBy != null)
-                    killedSound.Play();
-                else
-                    fallSound.Play();
 
                 sprite.PlayAnimation(dieAnimation);
             }
