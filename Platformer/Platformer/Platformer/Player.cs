@@ -83,15 +83,15 @@ namespace Platformer
 
         // Constants for controling horizontal movement
         private const float MoveAcceleration = 12000.0f;
-        private const float MaxMoveSpeed = 6000.0f;
-        private const float GroundDragFactor = 0.65f;
-        private const float AirDragFactor = 0.65f;
+        private const float MaxMoveSpeed = 90000.0f;
+        private const float GroundDragFactor = .7f;
+        private const float AirDragFactor = 0.7f;
 
         // Constants for controlling vertical movement
-        private const float MaxJumpTime = 0.241f;
+        private const float MaxJumpTime = 0.3f;
         private const float JumpLaunchVelocity = -3500.0f;
         private const float GravityAcceleration = 3400.0f;
-        private const float MaxFallSpeed = 450.0f;
+        private const float MaxFallSpeed = 300.0f;
         private const float JumpControlPower = 0.14f; 
 
         // Input configuration
@@ -214,6 +214,13 @@ namespace Platformer
         /// </summary>
         /// <param name="position">The position to come to life at.</param>
         public void Reset(Vector2 position) {
+            idleAnimation = blueIdleAnimation;
+            runAnimation = blueRunAnimation;
+            jumpAnimation = blueJumpAnimation;
+            celebrateAnimation = blueCelebrateAnimation;
+            dieAnimation = blueDieAnimation;
+            playerState = ColorState.Blue;
+            
             Position = position;
             Velocity = Vector2.Zero;
             isAlive = true;

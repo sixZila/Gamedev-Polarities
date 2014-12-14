@@ -174,8 +174,8 @@
       <Name>0</Name>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Levels\2.txt">
-      <Name>2</Name>
+    <None Include="Levels\1.txt">
+      <Name>1</Name>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Compile Include="Overlays\you_died.png">
@@ -195,9 +195,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Levels\1.txt">
+    <None Include="Levels\3.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>1</Name>
+      <Name>3</Name>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -400,6 +400,12 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Levels\2.txt">
+      <Name>2</Name>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
