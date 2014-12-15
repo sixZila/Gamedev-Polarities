@@ -35,9 +35,6 @@ namespace Platformer
         private SpriteFont hudFont;
         private GameState gameState;
 
-        private Texture2D winOverlay;
-        private Texture2D loseOverlay;
-        private Texture2D diedOverlay;
         private Texture2D startButton;
         private Texture2D startButtonHighlighted;
         private Texture2D exitButton;
@@ -170,9 +167,6 @@ namespace Platformer
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            // Handle polling for our input and handling high-level input
-            
-
             if (nextLevel && !fadeOut)
             {
                 gameState = GameState.InGame;
@@ -189,39 +183,10 @@ namespace Platformer
             }
             else
             {
+                keyboardState = Keyboard.GetState();
                 var mouseState = Mouse.GetState();
                 var mousePosition = new Point(mouseState.X, mouseState.Y);
 
-                if (mouseState.LeftButton == ButtonState.Pressed || gamePadState.IsButtonDown(Buttons.A) || keyboardState.IsKeyDown(Keys.Enter))
-                {
-                    if (startButtonBounds.Contains(mousePosition) || menuState == START_BUTTON)
-                    {
-
-                        fadeOut = true;
-                        //LoadNextLevel();
-                        nextLevel = true;
-                    }
-                    if (exitButtonBounds.Contains(mousePosition) || menuState == EXIT_BUTTON)
-                    {
-                        Exit();
-                    }
-                }
-            }
-    
-            base.Update(gameTime);
-        }
-
-
-        private void HandleInput()
-        {
-            // get all of our input states
-            keyboardState = Keyboard.GetState();
-            gamePadState = GamePad.GetState(PlayerIndex.One);
-            touchState = TouchPanel.GetState();
-            accelerometerState = Accelerometer.GetState();
-
-            if (gameState == GameState.Menu)
-            {
                 if ((gamePadState.IsButtonDown(Buttons.DPadUp) || keyboardState.IsKeyDown(Keys.Up)))
                 {
                     if (!menuButtonPressed)
@@ -242,7 +207,48 @@ namespace Platformer
                 {
                     menuButtonPressed = false;
                 }
+
+                if (mouseState.LeftButton == ButtonState.Pressed)
+                {
+                    if (startButtonBounds.Contains(mousePosition))
+                    {
+
+                        fadeOut = true;
+                        //LoadNextLevel();
+                        nextLevel = true;
+                    }
+                    if (exitButtonBounds.Contains(mousePosition))
+                    {
+                        Exit();
+                    }
+                }
+
+                if(gamePadState.IsButtonDown(Buttons.A) || keyboardState.IsKeyDown(Keys.Enter)) {
+                    if (menuState == START_BUTTON)
+                    {
+
+                        fadeOut = true;
+                        //LoadNextLevel();
+                        nextLevel = true;
+                    }
+                    if (menuState == EXIT_BUTTON)
+                    {
+                        Exit();
+                    }
+                }
             }
+    
+            base.Update(gameTime);
+        }
+
+
+        private void HandleInput()
+        {
+            // get all of our input states
+            keyboardState = Keyboard.GetState();
+            gamePadState = GamePad.GetState(PlayerIndex.One);
+            touchState = TouchPanel.GetState();
+            accelerometerState = Accelerometer.GetState();
 
             // Exit the game when back is pressed.
             if (gamePadState.Buttons.Back == ButtonState.Pressed)
@@ -310,8 +316,6 @@ namespace Platformer
             if (gameState == GameState.InGame)
             {
                 level.Draw(gameTime, spriteBatch);
-
-                DrawHud();
             }
             else if (gameState == GameState.Menu)
             {
@@ -368,59 +372,6 @@ namespace Platformer
             spriteBatch.End();
 
             base.Draw(gameTime);
-        }
-
-        private void DrawHud()
-        {
-            Rectangle titleSafeArea = GraphicsDevice.Viewport.TitleSafeArea;
-            Vector2 hudLocation = new Vector2(titleSafeArea.X, titleSafeArea.Y);
-            Vector2 center = new Vector2(titleSafeArea.X + titleSafeArea.Width / 2.0f,
-                                         titleSafeArea.Y + titleSafeArea.Height / 2.0f);
-
-            // Draw time remaining. Uses modulo division to cause blinking when the
-            // player is running out of time.
-            /*string timeString = "TIME: " + level.TimeRemaining.Minutes.ToString("00") + ":" + level.TimeRemaining.Seconds.ToString("00");
-            Color timeColor;
-            if (level.TimeRemaining > WarningTime ||
-                level.ReachedExit ||
-                (int)level.TimeRemaining.TotalSeconds % 2 == 0)
-            {
-                timeColor = Color.Black ;
-            }
-            else
-            {
-                timeColor = Color.Red;
-            }
-            DrawShadowedString(hudFont, timeString, hudLocation, timeColor);
-
-            // Draw score
-            float timeHeight = hudFont.MeasureString(timeString).Y;
-            DrawShadowedString(hudFont, "SCORE: " + level.Score.ToString(), hudLocation + new Vector2(0.0f, timeHeight * 1.2f), Color.Black);*/
-           
-            // Determine the status overlay message to show.
-            Texture2D status = null;
-            if (level.TimeRemaining == TimeSpan.Zero)
-            {
-                if (level.ReachedExit)
-                {
-                    status = winOverlay;
-                }
-                else
-                {
-                    status = loseOverlay;
-                }
-            }
-            else if (!level.Player.IsAlive)
-            {
-                status = diedOverlay;
-            }
-
-            if (status != null)
-            {
-                // Draw status message.
-                Vector2 statusSize = new Vector2(status.Width, status.Height);
-                spriteBatch.Draw(status, center - statusSize / 2, Color.White);
-            }
         }
 
         private void DrawShadowedString(SpriteFont font, string value, Vector2 position, Color color)

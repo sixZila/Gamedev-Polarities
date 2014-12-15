@@ -333,7 +333,7 @@ namespace Platformer
 
 
             if ((gamePadState.IsButtonDown(Buttons.LeftShoulder) ||
-                keyboardState.IsKeyDown(Keys.X)) && !isChanged)
+                keyboardState.IsKeyDown(Keys.E)) && !isChanged)
             {
                 changeState();
                 isChanged = true;
@@ -344,7 +344,6 @@ namespace Platformer
                 gamePadState.IsButtonDown(JumpButton) ||
                 keyboardState.IsKeyDown(Keys.Space) ||
                 keyboardState.IsKeyDown(Keys.Up) ||
-                keyboardState.IsKeyDown(Keys.W) ||
                 touchState.AnyTouch();
         }
 
